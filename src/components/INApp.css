@@ -1,0 +1,54 @@
+input {
+	display: block;
+	width: 490px;
+}
+
+img {
+	width: 120px;
+	height: 120px;
+}
+
+.ftnOn, .ftnOff {
+	display: inline-block;
+	width: 120px;
+	height: 120px;
+	margin: 2px 5px 2px 5px;
+	padding: 20px;
+	border-radius: 40px;
+}
+
+.ftnOn {
+	background-color: #FF0066; 
+}
+
+.ftnOff {
+	background-color: #00FFFF; 
+}
+
+.obj-link {
+	margin-bottom: 2px;
+	border-radius: 10px;
+	padding-left: 4px;
+	width: 500px;
+	height: 40px;
+	background-color: black;
+	text-align: center;
+	font-size: 26px;
+	font-family: Verdana;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:link {
+	color: pink;
+}
+
+a:hover {
+	color: yellow;
+}
+
+a:visited {
+	color: white;
+}

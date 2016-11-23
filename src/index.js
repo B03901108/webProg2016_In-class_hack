@@ -1,8 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import INApp from './components/INApp';
 
-import './style.css';
-import CalcApp from './components/CalcApp';
-
-// eslint
-ReactDOM.render(<CalcApp />, document.getElementById('root'));
+ReactDOM.render(<INApp />, document.getElementById('root'));
