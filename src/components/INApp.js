@@ -13,8 +13,9 @@ class INApp extends React.Component {
     super(props);
     this.state = {
       blockArr: [],
-      ftnOn: 0,
+      findArr: [],
       keptStr: "",
+      ftnOn: 0,
       isURL: false,
     };
     this.imgClass = this.imgClass.bind(this);
@@ -22,6 +23,8 @@ class INApp extends React.Component {
     this.inputCreate = this.inputCreate.bind(this);
     this.delBlock = this.delBlock.bind(this);
     this.keyJudge = this.keyJudge.bind(this);
+    this.diff = this.diff.bind(this);
+    this.showBlocks = this.showBlocks.bind(this);
   }
 
   imgClass(index) {
@@ -30,7 +33,7 @@ class INApp extends React.Component {
   }
 
   modeClick(index) {
-    if (index !== this.state.ftnOn) this.setState({ ftnOn: index, isURL: false });
+    if (index !== this.state.ftnOn) this.setState({ findArr:[], ftnOn: index, isURL: false });
   }
 
   inputCreate() {
@@ -52,19 +55,45 @@ class INApp extends React.Component {
   }
 
   keyJudge(e) {
-    const {ftnOn, isURL, blockArr} = this.state;
+    const { ftnOn, isURL, blockArr } = this.state;
     if ((ftnOn < 2) && (!isURL)) e.target.value = e.target.value.substring(0, maxLen - 1);
     if (e.key === 'Enter') {
       const tmpMsg = e.target.value.trim();
-      if (tmpMsg === '') { e.target.value = ''; return; }
-      if (ftnOn !== 0) { e.target.value = ''; return; }
+      e.target.value = '';
+      if (tmpMsg === '') return;
+      if (ftnOn === 1) { /* TODO */ return; }
+      if (ftnOn === 2) {
+        const s = blockArr.length;
+        let { findArr } = this.state;
+        findArr = [];
+        for (let i = 0; i < s; i += 1) {
+          if (typeof blockArr[i] === 'undefined') continue;
+          if (!this.diff(tmpMsg, blockArr[i].props.nm)) findArr.push(blockArr[i]);
+        }
+        this.setState({ findArr: findArr.slice() });
+        return;
+      }
       if (isURL) {
         const id = blockArr.length;
         blockArr.push(<INObj key={id} nm={this.state.keptStr} url={tmpMsg} del={this.delBlock(id)} />);
       } else this.state.keptStr = tmpMsg;
-      e.target.value = '';
       this.setState({ isURL: (isURL === false) });
     }
+  }
+
+  diff(m, nm) {
+    const ml = m.length;
+    const nml = nm.length;
+    for (let i = 0; i < nml; i += 1) {      
+      if (nm.substring(i, i + ml) === m) return false;
+    }
+    return true;
+  }
+
+  showBlocks() {
+    const { blockArr, findArr, ftnOn } = this.state;
+    if (ftnOn === 2) return findArr;
+    return blockArr;
   }
 
   render() {
@@ -83,7 +112,7 @@ class INApp extends React.Component {
           {this.inputCreate()}
         </div>
         <div className="in-blocks">
-          {this.state.blockArr}
+          {this.showBlocks()}
         </div>
       </div>
     );
