@@ -1,6 +1,6 @@
 import React from 'react';
 import './INApp.css';
-// import INDir from './INDir';
+import INDir from './INDir';
 import INObj from './INObj';
 
 const maxLen = 16;
@@ -24,7 +24,9 @@ class INApp extends React.Component {
     super(props);
     this.state = {
       blockArr: [],
+      groupArr: [],
       findArr: [],
+      findDirArr: [],
       keptStr: '',
       ftnOn: 0,
       isURL: false,
@@ -35,6 +37,7 @@ class INApp extends React.Component {
     this.delBlock = this.delBlock.bind(this);
     this.keyJudge = this.keyJudge.bind(this);
     this.showBlocks = this.showBlocks.bind(this);
+    this.showGroups = this.showGroups.bind(this);
   }
 
   imgClass(index) {
@@ -45,6 +48,7 @@ class INApp extends React.Component {
   modeClick(index) {
     if (index !== this.state.ftnOn) {
       this.state.findArr.length = 0;
+      this.state.findDirArr.length = 0;
       this.setState({ ftnOn: index, isURL: false });
     }
   }
@@ -72,20 +76,44 @@ class INApp extends React.Component {
     });
   }
 
+  delGroup(index) {
+    const { groupArr, findDirArr } = this.state;
+    return (() => {
+      const x = findDirArr.length;
+      if (x > 0) for (let i = 0; i < x; i += 1) {
+        if ((typeof findDirArr[i] !== 'undefined') &&
+            (groupArr[index].props.del === findDirArr[i].props.del)) { delete findDirArr[i]; break; }
+      }
+      delete groupArr[index];
+      this.setState({ isURL: this.state.isURL });
+    });
+  }
+
   keyJudge(e) {
-    const { ftnOn, isURL, blockArr, findArr } = this.state;
+    const { ftnOn, isURL, blockArr, groupArr, findArr, findDirArr } = this.state;
     if ((ftnOn < 2) && (!isURL)) e.target.value = e.target.value.substring(0, maxLen - 1);
     if (e.key === 'Enter') {
       const tmpMsg = e.target.value.trim();
       e.target.value = '';
       if (tmpMsg === '') return;
-      if (ftnOn === 1) { /* TODO */ return; }
+      if (ftnOn === 1) {
+        const id = groupArr.length;
+        groupArr.push(<INDir key={id} nm={tmpMsg} del={this.delGroup(id)} />);
+        this.setState({ isURL: isURL });
+        return;
+      }
       if (ftnOn === 2) {
         const s = blockArr.length;
+        const t = groupArr.length;
         findArr.length = 0;
+        findDirArr.length = 0;
         for (let i = 0; i < s; i += 1) {
           if ((typeof blockArr[i] !== 'undefined') &&
               (!diff(tmpMsg, blockArr[i].props.nm))) findArr.push(blockArr[i]);
+        }
+        for (let i = 0; i < t; i += 1) {
+          if ((typeof groupArr[i] !== 'undefined') &&
+              (!diff(tmpMsg, groupArr[i].props.nm))) findDirArr.push(groupArr[i]);
         }
         this.setState({ isURL: isURL });
         return;
@@ -104,6 +132,12 @@ class INApp extends React.Component {
     return blockArr;
   }
 
+  showGroups() {
+    const { groupArr, findDirArr, ftnOn } = this.state;
+    if (ftnOn === 2) return findDirArr;
+    return groupArr;
+  }
+
   render() {
     return (
       <div className="in-app">
@@ -118,6 +152,9 @@ class INApp extends React.Component {
             <img src={findURL} width="90 px" height="90 px" />
           </div>
           {this.inputCreate()}
+        </div>
+        <div className="in-groups">
+          {this.showGroups()}
         </div>
         <div className="in-blocks">
           {this.showBlocks()}

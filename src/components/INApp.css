@@ -39,8 +39,15 @@ img {
 	font-family:Courier, serif;
 }
 
-.in-blocks {
+.in-groups, .in-blocks {
 	width: 1150px;
 	margin: 15px auto;
+}
+
+.in-groups {
+	border-top: thick double purple;
+}
+
+.in-blocks {
 	border-top: thick double blue;
 }
