@@ -1,4 +1,5 @@
 import React from 'react';
+import './INObj.css';
 
 const INObj = ({ nm, url, del }) => (
   <div className="obj-link">
