@@ -21500,6 +21500,8 @@
 	    _this.modeClick = _this.modeClick.bind(_this);
 	    _this.inputCreate = _this.inputCreate.bind(_this);
 	    _this.delBlock = _this.delBlock.bind(_this);
+	    _this.delGroup = _this.delGroup.bind(_this);
+	    _this.transBlock = _this.transBlock.bind(_this);
 	    _this.keyJudge = _this.keyJudge.bind(_this);
 	    _this.showBlocks = _this.showBlocks.bind(_this);
 	    _this.showGroups = _this.showGroups.bind(_this);
@@ -21573,6 +21575,20 @@
 	      };
 	    }
 	  }, {
+	    key: 'transBlock',
+	    value: function transBlock(tmpMsg) {
+	      var blockArr = this.state.blockArr;
+
+	      var s = blockArr.length;
+	      for (var i = 0; i < s; i += 1) {
+	        if (typeof blockArr[i] !== 'undefined' && tmpMsg === blockArr[i].props.nm) {
+	          var tmpBlock = blockArr[i];
+	          blockArr[i].props.del();
+	          return tmpBlock;
+	        }
+	      }
+	    }
+	  }, {
 	    key: 'keyJudge',
 	    value: function keyJudge(e) {
 	      var _state4 = this.state,
@@ -21590,7 +21606,7 @@
 	        if (tmpMsg === '') return;
 	        if (ftnOn === 1) {
 	          var id = groupArr.length;
-	          groupArr.push(_react2.default.createElement(_INDir2.default, { key: id, nm: tmpMsg, del: this.delGroup(id) }));
+	          groupArr.push(_react2.default.createElement(_INDir2.default, { key: id, nm: tmpMsg, fetcher: this.transBlock, del: this.delGroup(id) }));
 	          this.setState({ isURL: isURL });
 	          return;
 	        }
@@ -21725,7 +21741,7 @@
 
 
 	// module
-	exports.push([module.id, ".in-bar {\n\twidth: 515px;\n\tmargin: 0 auto;\n}\n\n.ftnOn, .ftnOff {\n\tdisplay: inline-block;\n\twidth: 120px;\n\theight: 120px;\n\tmargin: 8px 5px 15px 5px;\n\tpadding: 20px;\n\tborder-radius: 40px\t\n}\n\n.ftnOn {\n\tbackground-color: #FF0066;\n\tborder:2px solid black;\n}\n\n.ftnOff {\n\tbackground-color: #00FFFF;\n\tcursor: pointer;\n}\n\nimg {\n\twidth: 120px;\n\theight: 120px;\n}\n\n.in-bar > input {\n\tdisplay: block;\n\twidth: 490px;\n\theight:30px;\n\tmargin: 0 auto;\n\tborder:2px solid black;\n\tborder-radius: 10px;\n\tpadding-left:4px;\n\tfont-size:26px;\n\tfont-family:Courier, serif;\n}\n\n.in-groups, .in-blocks {\n\twidth: 1150px;\n\tmargin: 15px auto;\n}\n\n.in-groups {\n\tborder-top: thick double purple;\n}\n\n.in-blocks {\n\tborder-top: thick double blue;\n}\n", ""]);
+	exports.push([module.id, ".in-bar {\n\twidth: 515px;\n\tmargin: 0 auto;\n}\n\n.ftnOn, .ftnOff {\n\tdisplay: inline-block;\n\twidth: 120px;\n\theight: 120px;\n\tmargin: 8px 5px 15px 5px;\n\tpadding: 20px;\n\tborder-radius: 40px\t\n}\n\n.ftnOn {\n\tbackground-color: #FF0066;\n\tborder: 2px solid black;\n}\n\n.ftnOff {\n\tbackground-color: #00FFFF;\n\tcursor: pointer;\n}\n\nimg {\n\twidth: 120px;\n\theight: 120px;\n}\n\n.in-bar > input {\n\tdisplay: block;\n\twidth: 490px;\n\theight: 30px;\n\tmargin: 0 auto;\n\tborder: 2px solid black;\n\tborder-radius: 10px;\n\tpadding-left: 4px;\n\tfont-size: 26px;\n\tfont-family: Courier, serif;\n}\n\n.in-groups, .in-blocks {\n\twidth: 1150px;\n\tmargin: 15px auto;\n}\n\n.in-groups {\n\tborder-top: thick double purple;\n}\n\n.in-blocks {\n\tborder-top: thick double blue;\n}\n", ""]);
 
 	// exports
 
@@ -22078,32 +22094,79 @@
 
 	    _this.state = {
 	      elementArr: [],
-	      show: false
+	      show: 0
 	    };
+	    _this.delBlock = _this.delBlock.bind(_this);
 	    _this.add = _this.add.bind(_this);
+	    _this.blockCreate = _this.blockCreate.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(INDir, [{
+	    key: 'delBlock',
+	    value: function delBlock(index) {
+	      var _this2 = this;
+
+	      var elementArr = this.state.elementArr;
+
+	      return function () {
+	        delete elementArr[index];
+	        _this2.setState({ show: _this2.state.show });
+	      };
+	    }
+	  }, {
 	    key: 'add',
-	    value: function add() {}
+	    value: function add(e) {
+	      if (e.key === 'Enter') {
+	        var tmpMsg = e.target.value.trim();
+	        e.target.value = '';
+	        var oldBlock = this.props.fetcher(tmpMsg);
+	        if (typeof oldBlock !== 'undefined') {
+	          var elementArr = this.state.elementArr;
+	          var _oldBlock$props = oldBlock.props,
+	              nm = _oldBlock$props.nm,
+	              url = _oldBlock$props.url;
+
+	          var id = elementArr.length;
+	          elementArr.push(_react2.default.createElement(_INObj2.default, { key: id, nm: nm, url: url, del: this.delBlock(id) }));
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'blockCreate',
+	    value: function blockCreate() {
+	      var msg = 'Enter New Members';
+	      var _state = this.state,
+	          show = _state.show,
+	          elementArr = _state.elementArr;
+
+	      if (show === 1) return elementArr;
+	      if (show === 2) return _react2.default.createElement('input', { type: 'text', placeholder: msg, onKeyPress: this.add });
+	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this3 = this;
+
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'dir-area' },
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'dir-link' },
-	          _react2.default.createElement('input', { type: 'button', value: '+', className: 'addBlock', onClick: this.add }),
+	          _react2.default.createElement('input', { type: 'button', value: '+', className: 'addBlock', onClick: function onClick() {
+	              if (_this3.state.show === 2) _this3.setState({ show: 0 });else _this3.setState({ show: 2 });
+	            } }),
 	          _react2.default.createElement(
 	            'span',
-	            null,
+	            { onClick: function onClick() {
+	                if (_this3.state.show === 1) _this3.setState({ show: 0 });else _this3.setState({ show: 1 });
+	              } },
 	            this.props.nm
 	          ),
 	          _react2.default.createElement('input', { type: 'button', value: 'x', className: 'deleteGroup', onClick: this.props.del })
-	        )
+	        ),
+	        this.blockCreate()
 	      );
 	    }
 	  }]);
@@ -22148,7 +22211,7 @@
 
 
 	// module
-	exports.push([module.id, ".dir-area {\n\tdisplay: inline-block;\n\tmargin: 2px 4px 2px 4px;\n\twidth: 279px;\n}\n\n.dir-link {\n\tdisplay: block;\n\tmargin: 0px 0px 2px 0px;\n\tborder-radius: 10px;\n\tpadding-top: 2px;\n\tpadding-left: 4px;\n\twidth: 275px;\n\theight: 30px;\n\tbackground-color: #C4F5FF;\n\ttext-align: center;\n\tfont-size: 20px;\n\tfont-family: Verdana;\n}\n\nspan {\n\tcolor: #F35325;\n\tcursor: pointer;\n}\n\nspan:hover {\n\tcolor: black;\n}\n\n.addBlock {\n\tfloat: left;\n\twidth: 24px;\n\theight: 24px;\n\tbackground-color: Transparent;\n\tborder: none;\n\ttext-align: center;\n\tfont-size: 20px;\n\tfont-weight: bolder;\n\tfont-family: monospace;\n\tcolor: white;\n\tcursor: pointer;\n}\n\n.deleteGroup {\n\tfloat: right;\n\twidth: 24px;\n\theight: 24px;\n\tbackground-color: Transparent;\n\tborder: none;\n\ttext-align: center;\n\tfont-size: 20px;\n\tfont-family: monospace;\n\tcolor: #FEC4C4;\n\tcursor: pointer;\n}\n", ""]);
+	exports.push([module.id, ".dir-area {\n\tdisplay: inline-block;\n\tmargin: 2px 4px 2px 4px;\n\twidth: 279px;\n}\n\n.dir-link {\n\tdisplay: block;\n\tmargin: 0px 0px 2px 0px;\n\tborder-radius: 10px;\n\tpadding-top: 2px;\n\tpadding-left: 4px;\n\twidth: 275px;\n\theight: 30px;\n\tbackground-color: #C4F5FF;\n\ttext-align: center;\n\tfont-size: 20px;\n\tfont-family: Verdana;\n}\n\n.dir-area > input {\n\tdisplay: block;\n\tmargin: 0px 0px 2px 0px;\n\tborder: 2px solid black;\n\tborder-radius: 10px;\n\tpadding-left: 4px;\n\twidth: 270px;\n\theight: 28px;\n\tfont-size: 20px;\n\tfont-family: Courier, serif;\n}\n\nspan {\n\tcolor: #F35325;\n\tcursor: pointer;\n}\n\nspan:hover {\n\tcolor: black;\n}\n\n.addBlock, .deleteGroup {\n\twidth: 24px;\n\theight: 24px;\n\tbackground-color: Transparent;\n\tborder: none;\n\ttext-align: center;\n\tfont-size: 20px;\n\tfont-family: monospace;\n\tcursor: pointer;\n}\n\n.addBlock {\n\tfloat: left;\n\tfont-weight: bolder;\n\tcolor: white;\n}\n\n.deleteGroup {\n\tfloat: right;\n\tcolor: #FEC4C4;\n}\n", ""]);
 
 	// exports
 

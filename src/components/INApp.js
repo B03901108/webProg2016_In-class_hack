@@ -35,6 +35,8 @@ class INApp extends React.Component {
     this.modeClick = this.modeClick.bind(this);
     this.inputCreate = this.inputCreate.bind(this);
     this.delBlock = this.delBlock.bind(this);
+    this.delGroup = this.delGroup.bind(this);
+    this.transBlock = this.transBlock.bind(this);
     this.keyJudge = this.keyJudge.bind(this);
     this.showBlocks = this.showBlocks.bind(this);
     this.showGroups = this.showGroups.bind(this);
@@ -89,6 +91,18 @@ class INApp extends React.Component {
     });
   }
 
+  transBlock(tmpMsg) {
+    const { blockArr } = this.state;
+    const s = blockArr.length;
+    for (let i = 0; i < s; i += 1) {
+      if ((typeof blockArr[i] !== 'undefined') && (tmpMsg === blockArr[i].props.nm)) {
+        const tmpBlock = blockArr[i];
+        blockArr[i].props.del();
+        return tmpBlock;
+      }
+    }
+  }
+
   keyJudge(e) {
     const { ftnOn, isURL, blockArr, groupArr, findArr, findDirArr } = this.state;
     if ((ftnOn < 2) && (!isURL)) e.target.value = e.target.value.substring(0, maxLen - 1);
@@ -98,7 +112,7 @@ class INApp extends React.Component {
       if (tmpMsg === '') return;
       if (ftnOn === 1) {
         const id = groupArr.length;
-        groupArr.push(<INDir key={id} nm={tmpMsg} del={this.delGroup(id)} />);
+        groupArr.push(<INDir key={id} nm={tmpMsg} fetcher={this.transBlock} del={this.delGroup(id)} />);
         this.setState({ isURL: isURL });
         return;
       }

@@ -14,7 +14,7 @@
 
 .ftnOn {
 	background-color: #FF0066;
-	border:2px solid black;
+	border: 2px solid black;
 }
 
 .ftnOff {
@@ -30,13 +30,13 @@ img {
 .in-bar > input {
 	display: block;
 	width: 490px;
-	height:30px;
+	height: 30px;
 	margin: 0 auto;
-	border:2px solid black;
+	border: 2px solid black;
 	border-radius: 10px;
-	padding-left:4px;
-	font-size:26px;
-	font-family:Courier, serif;
+	padding-left: 4px;
+	font-size: 26px;
+	font-family: Courier, serif;
 }
 
 .in-groups, .in-blocks {
